@@ -193,6 +193,21 @@ require('lazy').setup({
       { "<leader>T", "<cmd>NvimTreeFindFile<cr>", desc="Open nvim-tree and show current file" },
     },
   },
+  {
+    "ray-x/go.nvim",
+    dependencies = {  -- optional packages
+      "ray-x/guihua.lua",
+      "neovim/nvim-lspconfig",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("go").setup()
+    end,
+    event = {"CmdlineEnter"},
+    ft = {"go", 'gomod'},
+    build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
+  },
+  
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
@@ -251,9 +266,11 @@ vim.o.completeopt = 'menuone,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+vim.o.ts = 4
+
 -- [[ Basic Keymaps ]]
 
-vim.keymap.set({ 'n', 'v' }, '<BS>', ':', { silent = true })
+vim.keymap.set({ 'n', 'v' }, '<BS>', ':', { silent = false })
 -- Turn off stuff that is killing my right hand. Leave on in visual mode for now.
 -- Seems crazy but I actually want to de-optimize my cursor movement.
 vim.keymap.set({ 'n'}, ':', '<Nop>', { silent = true })
@@ -437,11 +454,11 @@ end
 --  Add any additional override configuration in the following tables. They will be passed to
 --  the `settings` field of the server config. You must look up that documentation yourself.
 local servers = {
-  -- clangd = {},
-  -- gopls = {},
-  -- pyright = {},
-  -- rust_analyzer = {},
-  -- tsserver = {},
+  clangd = {},
+  gopls = {},
+  pyright = {},
+  rust_analyzer = {},
+  tsserver = {},
 
   lua_ls = {
     Lua = {
