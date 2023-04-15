@@ -180,7 +180,7 @@ require('lazy').setup({
     },
   },
 
-  {
+  { -- File tree navigator
     'nvim-tree/nvim-tree.lua',
     dependencies = {
       'nvim-tree/nvim-web-devicons'
@@ -189,7 +189,7 @@ require('lazy').setup({
       require('nvim-tree').setup {}
     end,
     keys = {
-      { "<leader>t", "<cmd>NvimTreeFocus<cr>", desc="Open nvim-tree" },
+      { "<leader>t", "<cmd>NvimTreeToggle<cr>", desc="Toggle nvim-tree" },
       { "<leader>T", "<cmd>NvimTreeFindFile<cr>", desc="Open nvim-tree and show current file" },
     },
   },
@@ -254,7 +254,11 @@ vim.o.termguicolors = true
 -- [[ Basic Keymaps ]]
 
 vim.keymap.set({ 'n', 'v' }, '<BS>', ':', { silent = true })
+-- Turn off stuff that is killing my right hand. Leave on in visual mode for now.
 vim.keymap.set({ 'n'}, ':', '<Nop>', { silent = true })
+vim.keymap.set({ 'n'}, 'h', '<Nop>', { silent = true })
+vim.keymap.set({ 'n'}, 'l', '<Nop>', { silent = true })
+
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
