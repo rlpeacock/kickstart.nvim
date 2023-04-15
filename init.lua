@@ -255,9 +255,12 @@ vim.o.termguicolors = true
 
 vim.keymap.set({ 'n', 'v' }, '<BS>', ':', { silent = true })
 -- Turn off stuff that is killing my right hand. Leave on in visual mode for now.
+-- Seems crazy but I actually want to de-optimize my cursor movement.
 vim.keymap.set({ 'n'}, ':', '<Nop>', { silent = true })
 vim.keymap.set({ 'n'}, 'h', '<Nop>', { silent = true })
 vim.keymap.set({ 'n'}, 'l', '<Nop>', { silent = true })
+vim.keymap.set({ 'n'}, 'j', '<Nop>', { silent = true })
+vim.keymap.set({ 'n'}, 'k', '<Nop>', { silent = true })
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
