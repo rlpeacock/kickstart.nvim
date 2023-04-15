@@ -125,7 +125,7 @@ require('lazy').setup({
     -- See `:help lualine.txt`
     opts = {
       options = {
-        icons_enabled = false,
+        icons_enabled = true,
         theme = 'onedark',
         component_separators = '|',
         section_separators = '',
@@ -170,6 +170,29 @@ require('lazy').setup({
     build = ":TSUpdate",
   },
 
+  { -- A floating window with a list of buffers
+    'j-morano/buffer_manager.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    keys = {
+      { "<leader>b", "<cmd>lua require('buffer_manager.ui').toggle_quick_menu()<cr>", desc="Show buffer window" },
+    },
+  },
+
+  {
+    'nvim-tree/nvim-tree.lua',
+    dependencies = {
+      'nvim-tree/nvim-web-devicons'
+    },
+    config = function()
+      require('nvim-tree').setup {}
+    end,
+    keys = {
+      { "<leader>t", "<cmd>NvimTreeFocus<cr>", desc="Open nvim-tree" },
+      { "<leader>T", "<cmd>NvimTreeFindFile<cr>", desc="Open nvim-tree and show current file" },
+    },
+  },
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
@@ -230,6 +253,8 @@ vim.o.termguicolors = true
 
 -- [[ Basic Keymaps ]]
 
+vim.keymap.set({ 'n', 'v' }, '<BS>', ':', { silent = true })
+vim.keymap.set({ 'n'}, ':', '<Nop>', { silent = true })
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
