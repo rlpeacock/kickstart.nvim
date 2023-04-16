@@ -1,44 +1,4 @@
---[[
 
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-
-Kickstart.nvim is *not* a distribution.
-
-Kickstart.nvim is a template for your own configuration.
-  The goal is that you can read every line of code, top-to-bottom, and understand
-  what your configuration is doing.
-
-  Once you've done that, you should start exploring, configuring and tinkering to
-  explore Neovim!
-
-  If you don't know anything about Lua, I recommend taking some time to read through
-  a guide. One possible example:
-  - https://learnxinyminutes.com/docs/lua/
-
-  And then you can explore or search through `:help lua-guide`
-
-
-Kickstart Guide:
-
-I have left several `:help X` comments throughout the init.lua
-You should run that command and read that help section for more information.
-
-In addition, I have some `NOTE:` items throughout the file.
-These are for you, the reader to help understand what is happening. Feel free to delete
-them once you know what you're doing, but they should serve as a guide for when you
-are first encountering a few different constructs in your nvim config.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now :)
---]]
-
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -52,19 +12,13 @@ if not vim.loop.fs_stat(lazypath) then
     'clone',
     '--filter=blob:none',
     'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
+    '--branch=stable',
     lazypath,
   }
 end
 vim.opt.rtp:prepend(lazypath)
 
--- NOTE: Here is where you install your plugins.
---  You can configure plugins using the `config` key.
---
---  You can also configure plugins after the setup call,
---    as they will be available in your neovim runtime.
 require('lazy').setup({
-  -- NOTE: First, some plugins that don't require any configuration
 
   -- Git related plugins
   'tpope/vim-fugitive',
@@ -73,8 +27,8 @@ require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
-  -- NOTE: This is where your plugins related to LSP can be installed.
-  --  The configuration is done below. Search for lspconfig to find it below.
+  -- Not sure what these do yet. Actual LSP server install happens
+  -- below - they just need to be added to the `servers` list.
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -96,8 +50,11 @@ require('lazy').setup({
     dependencies = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
   },
 
-  -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
+  { -- Useful plugin to show you pending keybinds.
+    'folke/which-key.nvim',
+    opts = {}
+  },
+
   { -- Adds git releated signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
@@ -112,11 +69,21 @@ require('lazy').setup({
     },
   },
 
-  { -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
-    priority = 1000,
+  { -- material theme
+    'marko-cerovac/material.nvim',
+    priority = 1000, -- apparently, you get race conditions on styling without this
     config = function()
-      vim.cmd.colorscheme 'onedark'
+      require('material').setup({
+        lualine_style = 'material',
+        plugins = {
+          "nvim-tree",
+          "nvim-web-devicons",
+          "telescope",
+          "which-key",
+        },
+      })
+      vim.g.material_style = "deep ocean"
+      vim.cmd.colorscheme 'material'
     end,
   },
 
@@ -126,7 +93,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = true,
-        theme = 'onedark',
+        theme = 'material',
         component_separators = '|',
         section_separators = '',
       },
@@ -143,11 +110,17 @@ require('lazy').setup({
     },
   },
 
-  -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
+  { -- "gc" to comment visual regions/lines
+    'numToStr/Comment.nvim',
+    opts = {}
+  },
 
-  -- Fuzzy Finder (files, lsp, etc)
-  { 'nvim-telescope/telescope.nvim', version = '*', dependencies = { 'nvim-lua/plenary.nvim' } },
+
+  { -- Fuzzy Finder (files, lsp, etc)
+    'nvim-telescope/telescope.nvim',
+    version = '*',
+    dependencies = { 'nvim-lua/plenary.nvim' }
+  },
 
   -- Fuzzy Finder Algorithm which requires local dependencies to be built.
   -- Only load if `make` is available. Make sure you have the system
@@ -193,9 +166,10 @@ require('lazy').setup({
       { "<leader>T", "<cmd>NvimTreeFindFile<cr>", desc="Open nvim-tree and show current file" },
     },
   },
-  {
+
+  { -- Go language extras
     "ray-x/go.nvim",
-    dependencies = {  -- optional packages
+    dependencies = {
       "ray-x/guihua.lua",
       "neovim/nvim-lspconfig",
       "nvim-treesitter/nvim-treesitter",
@@ -205,24 +179,18 @@ require('lazy').setup({
     end,
     event = {"CmdlineEnter"},
     ft = {"go", 'gomod'},
-    build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
+    build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
+    keys = {
+      { "<leader>ae", "<cmd>lua require('go.iferr').run()<cr>", desc="Generate Go error block" },
+    },
   },
-  
+
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
   -- require 'kickstart.plugins.autoformat',
   -- require 'kickstart.plugins.debug',
 
-  -- NOTE: The import below automatically adds your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
-  --    up-to-date with whatever is in the kickstart repo.
-  --
-  --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  --
-  --    An additional note is that if you only copied in the `init.lua`, you can just comment this line
-  --    to get rid of the warning telling you that there are not plugins in `lua/custom/plugins/`.
-  { import = 'custom.plugins' },
 }, {})
 
 -- [[ Setting options ]]
@@ -238,8 +206,6 @@ vim.wo.number = true
 vim.o.mouse = 'a'
 
 -- Sync clipboard between OS and Neovim.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
 vim.o.clipboard = 'unnamedplus'
 
 -- Enable break indent
@@ -263,7 +229,6 @@ vim.o.timeoutlen = 300
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
 
--- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
 vim.o.ts = 4
@@ -271,13 +236,20 @@ vim.o.ts = 4
 -- [[ Basic Keymaps ]]
 
 vim.keymap.set({ 'n', 'v' }, '<BS>', ':', { silent = false })
--- Turn off stuff that is killing my right hand. Leave on in visual mode for now.
+vim.keymap.set({ 'n' }, '<CR>', 'o', {})
+vim.keymap.set({ 'n' }, '<TAB>', 'O', {})
+vim.keymap.set({ 'n' }, '<leader>f', '/', {})
+-- Turn off stuff that is killing my right hand. 
 -- Seems crazy but I actually want to de-optimize my cursor movement.
-vim.keymap.set({ 'n'}, ':', '<Nop>', { silent = true })
-vim.keymap.set({ 'n'}, 'h', '<Nop>', { silent = true })
-vim.keymap.set({ 'n'}, 'l', '<Nop>', { silent = true })
-vim.keymap.set({ 'n'}, 'j', '<Nop>', { silent = true })
-vim.keymap.set({ 'n'}, 'k', '<Nop>', { silent = true })
+vim.keymap.set({ 'n', 'v' }, ':', '<Nop>', { silent = true })
+vim.keymap.set({ 'n', 'v' }, 'h', '<Nop>', { silent = true })
+vim.keymap.set({ 'n', 'v' }, 'l', '<Nop>', { silent = true })
+vim.keymap.set({ 'n', 'v' }, 'j', '<Nop>', { silent = true })
+vim.keymap.set({ 'n', 'v' }, 'k', '<Nop>', { silent = true })
+vim.keymap.set({ 'n' }, 'o', '<Nop>', { silent = true })
+vim.keymap.set({ 'n' }, '/', '<Nop>', { silent = true })
+
+
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
@@ -337,7 +309,7 @@ require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
   ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
 
-  -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
+  -- Autoinstall languages that are not installed.
   auto_install = false,
 
   highlight = { enable = true },
@@ -448,11 +420,9 @@ local on_attach = function(_, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 end
 
--- Enable the following language servers
---  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
---
+-- Config to set up LSP servers
 --  Add any additional override configuration in the following tables. They will be passed to
---  the `settings` field of the server config. You must look up that documentation yourself.
+--  the `settings` field of the server config.
 local servers = {
   clangd = {},
   gopls = {},
@@ -537,5 +507,4 @@ cmp.setup {
   },
 }
 
--- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
